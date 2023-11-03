@@ -2,6 +2,10 @@
 import pygame
 import sys
 from world import World
+from dungeon_master import DungeonMaster
+
+# Initialize the world and dungeon master
+
 
 # Constants
 SCREEN_WIDTH = 800
@@ -17,7 +21,9 @@ clock = pygame.time.Clock()
 
 # Create a World instance
 world = World(SCREEN_WIDTH, SCREEN_HEIGHT, TILE_SIZE)
-
+dungeon_master = DungeonMaster()
+# Populate the world with walls
+dungeon_master.create(world)
 
 def main():
     running = True
