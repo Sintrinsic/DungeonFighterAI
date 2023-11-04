@@ -1,15 +1,18 @@
 import random
 from opensimplex import OpenSimplex
 import numpy as np
+from enemy import Enemy
 
 class DungeonMaster:
     def __init__(self, seed=None):
         self.noise_gen = OpenSimplex(seed=seed if seed is not None else random.randint(0, 1000))
         self.noise_scale = 10
+        self.world = None
 
     def create(self, world):
         noise_map = self.generate_noise_map(world)
         self.create_walls(world, noise_map)
+        self.world = world
 
     def generate_noise_map(self, world):
         noise_map = np.zeros((world.width, world.height))
@@ -96,3 +99,36 @@ class DungeonMaster:
             possible_directions.append('down')
 
         return random.choice(possible_directions) if possible_directions else 'up'
+
+    def create_enemy_at_edge_of_map(self):
+        # List to store potential spawn locations
+        potential_spawns = []
+
+        # Check top and bottom edges
+        for x in range(self.world.width):
+            if self.world.tiles[x][0].tile_type == 'air':  # Top edge
+                potential_spawns.append((x, 0))
+            if self.world.tiles[x][self.world.height - 1].tile_type == 'air':  # Bottom edge
+                potential_spawns.append((x, self.world.height - 1))
+
+        # Check left and right edges
+        for y in range(self.world.height):
+            if self.world.tiles[0][y].tile_type == 'air':  # Left edge
+                potential_spawns.append((0, y))
+            if self.world.tiles[self.world.width - 1][y].tile_type == 'air':  # Right edge
+                potential_spawns.append((self.world.width - 1, y))
+
+        # Ensure there is at least one potential spawn
+        if not potential_spawns:
+            raise Exception("No available spawn locations on the map edges.")
+
+        # Randomly choose a spawn location
+        spawn_location = random.choice(potential_spawns)
+
+        if len(spawn_location) > 0:
+            newEnemy = Enemy(self.world)
+            newEnemy.set_location(spawn_location[0], spawn_location[1])
+            self.world.enemies.append(newEnemy)  # Assuming the World class has a list of enemies
+
+
+
