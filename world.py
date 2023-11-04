@@ -66,3 +66,21 @@ class World:
                     color = (255, 255, 255)
                 pygame.draw.rect(screen, color, self.tiles[x][y].rect)
 
+                if self.is_player(x,y):
+                    face_thickness = 5
+                    # Determine the position and size of the "face" based on the last move direction
+                    face_rect = pygame.Rect(self.tiles[x][y].rect.x, self.tiles[x][y].rect.y,
+                                            self.tiles[x][y].rect.width, self.tiles[x][y].rect.height)
+                    if self.player.direction == 'up':
+                        face_rect.height = face_thickness
+                    elif self.player.direction == 'down':
+                        face_rect.y += self.tiles[x][y].rect.height - face_thickness
+                        face_rect.height = face_thickness
+                    elif self.player.direction == 'left':
+                        face_rect.width = face_thickness
+                    elif self.player.direction == 'right':
+                        face_rect.x += self.tiles[x][y].rect.width - face_thickness
+                        face_rect.width = face_thickness
+
+                    # Draw the face rectangle
+                    pygame.draw.rect(screen, (0, 0, 0), face_rect)
